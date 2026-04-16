@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Real Expense Tracker</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-secondary: #6b7280;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --expense: #ef4444;
+            --income: #10b981;
+            --border: #e5e7eb;
+        }
+
+        body.dark-theme {
+            --bg-color: #111827;
+            --card-bg: #1f2937;
+            --text-main: #f9fafb;
+            --text-secondary: #9ca3af;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --border: #374151;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 16px;
+            padding-bottom: 80px; /* Space for nav */
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Header / Balance */
+        .balance-card {
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+            border-radius: 20px;
+            padding: 24px;
+            color: white;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+            text-align: center;
+        }
+
+        .balance-title {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .balance-amount {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .balance-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 50%;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+
+        .stat-val.income { color: #a7f3d0; font-weight: 600; }
+        .stat-val.expense { color: #fecaca; font-weight: 600; }
+
+        /* Smart Input */
+        .input-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .input-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .chat-input:focus {
+            border-color: var(--primary);
+        }
+
+        .send-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            width: 46px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
+        }
+
+        .send-btn:active {
+            transform: scale(0.95);
+            background-color: var(--primary-hover);
+        }
+
+        .hint {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        /* Smart Insights */
+        .insight-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            border-left: 4px solid #f59e0b;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .insight-icon {
+            font-size: 24px;
+        }
+
+        .insight-text {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        /* Chart Section */
+        .chart-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 200px;
+            width: 100%;
+        }
+
+        /* Transaction History */
+        .tx-list {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .tx-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tx-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .tx-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 12px;
+        }
+
+        .icon-food { background-color: #fee2e2; }
+        .icon-transport { background-color: #dbeafe; }
+        .icon-entertainment { background-color: #f3e8ff; }
+        .icon-income { background-color: #d1fae5; }
+
+        .tx-details {
+            flex: 1;
+        }
+
+        .tx-title {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 2px;
+        }
+
+        .tx-date {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .tx-amount {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .amount-expense { color: var(--expense); }
+        .amount-income { color: var(--income); }
+
+        /* Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--card-bg);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom));
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 12px;
+            gap: 4px;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Balance -->
+    <div class="balance-card">
+        <div class="balance-title">Текущий баланс</div>
+        <div class="balance-amount" id="main-balance">12 450 сом</div>
+        
+        <div class="balance-stats">
+            <div class="stat-item">
+                <div class="stat-label">Доходы (апр)</div>
+                <div class="stat-val income">+15 000 ₸</div>
+            </div>
+            <div class="stat-item" style="border-left: 1px solid rgba(255,255,255,0.2);">
+                <div class="stat-label">Расходы (апр)</div>
+                <div class="stat-val expense">-2 550 ₸</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Smart Input -->
+    <div class="input-card">
+        <div class="input-title">Быстрая запись</div>
+        <div class="chat-input-wrapper">
+            <input type="text" class="chat-input" id="expense-input" placeholder="Например: 200 сом на кофе">
+            <button class="send-btn" onclick="addTransaction()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </div>
+        <div class="hint">Бот сам поймет категорию и сумму 🪄</div>
+    </div>
+
+    <!-- Smart Insights -->
+    <div class="insight-card" id="insight-box">
+        <div class="insight-icon">💡</div>
+        <div class="insight-text">
+            <strong>Умный инсайт:</strong> На этой неделе 40% твоих трат ушло на фастфуд. Если сократить кофе с собой, сэкономишь ~3000 сом в месяц.
+        </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-card">
+        <div class="section-title">Куда уходят деньги</div>
+        <div class="chart-container">
+            <canvas id="expenseChart"></canvas>
+        </div>
+    </div>
+
+    <!-- History -->
+    <div class="tx-list">
+        <div class="section-title" style="margin-bottom: 8px;">Последние операции</div>
+        <div id="tx-container">
+            <!-- Tx 1 -->
+            <div class="tx-item">
+                <div class="tx-icon icon-food">🍔</div>
+                <div class="tx-details">
+                    <div class="tx-title">KFC / Фастфуд</div>
+                    <div class="tx-date">Сегодня, 14:30</div>
+                </div>
+                <div class="tx-amount amount-expense">-450 сом</div>
+            </div>
+            
+            <!-- Tx 2 -->
+            <div class="tx-item">
+                <div class="tx-icon icon-transport">🚕</div>
+                <div class="tx-details">
+                    <div class="tx-title">Yandex Taxi</div>
+                    <div class="tx-date">Вчера, 18:15</div>
+                </div>
+                <div class="tx-amount amount-expense">-300 сом</div>
+            </div>
+
+            <!-- Tx 3 -->
+            <div class="tx-item">
+                <div class="tx-icon icon-income">💰</div>
+                <div class="tx-details">
+                    <div class="tx-title">От родителей</div>
+                    <div class="tx-date">14 апр, 10:00</div>
+                </div>
+                <div class="tx-amount amount-income">+5 000 сом</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+        <a href="#" class="nav-item active">
+            <span class="nav-icon">🏠</span>
+            <span>Главная</span>
+        </a>
+        <a href="#" class="nav-item">
+            <span class="nav-icon">📊</span>
+            <span>Аналитика</span>
+        </a>
+        <a href="#" class="nav-item">
+            <span class="nav-icon">🎯</span>
+            <span>Цели</span>
+        </a>
+        <a href="#" class="nav-item">
+            <span class="nav-icon">⚙️</span>
+            <span>Настройки</span>
+        </a>
+    </div>
+
+    <script>
+        // Init Telegram Web App
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Make full screen
+        
+        // Theme setup based on Telegram settings
+        if (tg.colorScheme === 'dark') {
+            document.body.classList.add('dark-theme');
+        }
+
+        tg.onEvent('themeChanged', () => {
+            if (tg.colorScheme === 'dark') {
+                document.body.classList.add('dark-theme');
+            } else {
+                document.body.classList.remove('dark-theme');
+            }
+        });
+
+        // Initialize Chart.js
+        const ctx = document.getElementById('expenseChart').getContext('2d');
+        let expenseChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Еда', 'Транспорт', 'Развлечения', 'Подписки'],
+                datasets: [{
+                    data: [45, 20, 25, 10],
+                    backgroundColor: [
+                        '#ef4444', // Red - Food
+                        '#3b82f6', // Blue - Transport
+                        '#8b5cf6', // Purple - Entertainment
+                        '#f59e0b'  // Yellow - Subs
+                    ],
+                    borderWidth: 0,
+                    cutout: '75%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            color: tg.colorScheme === 'dark' ? '#f9fafb' : '#1f2937',
+                            font: { family: 'Inter', size: 12 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Simple mock function to add transaction from Natural Language
+        function addTransaction() {
+            const input = document.getElementById('expense-input');
+            const text = input.value.trim().toLowerCase();
+            
+            if (!text) return;
+
+            // Very basic mock NLP regex
+            const amountMatch = text.match(/\d+/);
+            if (!amountMatch) {
+                tg.showAlert("Не вижу сумму! Напиши например: 200 на еду");
+                return;
+            }
+
+            const amount = parseInt(amountMatch[0]);
+            let category = "Разное";
+            let icon = "🛍️";
+            let iconClass = "icon-entertainment";
+            let isIncome = text.includes("получил") || text.includes("подарили") || text.includes("зп");
+
+            // Mock categories
+            if (text.includes("кофе") || text.includes("ед") || text.includes("бургер")) {
+                category = "Еда / Кофе";
+                icon = "☕️";
+                iconClass = "icon-food";
+            } else if (text.includes("такси") || text.includes("автобус")) {
+                category = "Транспорт";
+                icon = "🚕";
+                iconClass = "icon-transport";
+            }
+
+            if (isIncome) {
+                icon = "💰";
+                iconClass = "icon-income";
+                category = "Пополнение";
+            }
+
+            // Build HTML
+            const amountHtml = isIncome 
+                ? `<div class="tx-amount amount-income">+${amount} сом</div>`
+                : `<div class="tx-amount amount-expense">-${amount} сом</div>`;
+
+            const newTx = `
+                <div class="tx-item" style="animation: slideIn 0.3s ease-out;">
+                    <div class="tx-icon ${iconClass}">${icon}</div>
+                    <div class="tx-details">
+                        <div class="tx-title">${category}</div>
+                        <div class="tx-date">Только что</div>
+                    </div>
+                    ${amountHtml}
+                </div>
+            `;
+
+            // Add to top of list
+            const container = document.getElementById('tx-container');
+            container.insertAdjacentHTML('afterbegin', newTx);
+            
+            // Clear input and trigger haptic feedback
+            input.value = '';
+            tg.HapticFeedback.impactOccurred('light');
+
+            // Update chart mock
+            if (!isIncome) {
+                expenseChart.data.datasets[0].data[0] += amount / 10; // just visual mock
+                expenseChart.update();
+            }
+        }
+    </script>
+</body>
+</html>
