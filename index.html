@@ -47,81 +47,30 @@
         }
 
         /* Top Bar Logo */
-        .app-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        .app-logo {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            object-fit: contain;
-            background: white;
-            padding: 4px;
-        }
-        .app-title {
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
+        .app-header { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 20px; }
+        .app-logo { width: 40px; height: 40px; border-radius: 12px; object-fit: contain; background: white; padding: 4px; }
+        .app-title { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
 
         /* Tab Content */
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s ease-out;
-        }
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .tab-content { display: none; animation: fadeIn 0.3s ease-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Cards Gen */
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
+        .card { background-color: var(--card-bg); border-radius: 16px; padding: 16px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .section-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;}
 
         /* Balance Card */
-        .balance-card {
-            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
-            border-radius: 20px;
-            padding: 24px;
-            color: white;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
-            text-align: center;
-        }
+        .balance-card { background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); border-radius: 20px; padding: 24px; color: white; margin-bottom: 20px; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); text-align: center; }
         .balance-title { font-size: 14px; opacity: 0.9; margin-bottom: 8px; }
         .balance-amount { font-size: 36px; font-weight: 700; letter-spacing: -1px; }
 
         /* Smart Input */
         .input-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text-secondary); }
         .chat-input-wrapper { display: flex; gap: 8px; }
-        .chat-input {
-            flex: 1; padding: 12px 16px; border: 1px solid var(--border); border-radius: 12px;
-            background-color: var(--bg-color); color: var(--text-main); font-size: 16px; outline: none;
-        }
+        .chat-input { flex: 1; padding: 12px 16px; border: 1px solid var(--border); border-radius: 12px; background-color: var(--bg-color); color: var(--text-main); font-size: 16px; outline: none; }
         .chat-input:focus { border-color: var(--primary); }
-        .send-btn {
-            background-color: var(--primary); color: white; border: none; border-radius: 12px;
-            width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; cursor: pointer;
-        }
+        .send-btn { background-color: var(--primary); color: white; border: none; border-radius: 12px; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .send-btn:active { transform: scale(0.95); }
         .hint { font-size: 12px; color: var(--text-secondary); margin-top: 8px; text-align: center; }
 
@@ -143,57 +92,29 @@
         .chart-container { position: relative; height: 200px; width: 100%; }
 
         /* Goals */
-        .goal-item { margin-bottom: 16px; }
+        .goal-item { margin-bottom: 16px; position: relative; }
         .goal-item:last-child { margin-bottom: 0; }
-        .goal-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 500; font-size: 14px; }
-        .goal-bar-bg { background-color: var(--border); height: 10px; border-radius: 5px; overflow: hidden; }
-        .goal-bar-fill { background-color: var(--primary); height: 100%; border-radius: 5px; transition: width 0.5s ease; }
-        .goal-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
+        .goal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-weight: 500; font-size: 14px; }
+        .goal-bar-bg { background-color: var(--border); height: 10px; border-radius: 5px; overflow: hidden; margin-bottom: 6px;}
+        .goal-bar-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease; }
+        .goal-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); }
+        
+        .add-btn { background: var(--primary); color: white; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 600; font-size: 14px; cursor: pointer; }
+        .delete-btn { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 16px; margin-left: 8px; }
+
+        /* Modal Overlay */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 16px; animation: fadeIn 0.2s ease-out; }
+        .modal-card { background: var(--card-bg); width: 100%; max-width: 400px; border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2); }
 
         /* Team Grid */
-        .technovation-tag {
-            text-align: center;
-            font-size: 14px;
-            color: var(--primary);
-            font-weight: 600;
-            margin-bottom: 20px;
-            padding: 8px;
-            background: rgba(79, 70, 229, 0.1);
-            border-radius: 12px;
-        }
-
-        .team-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-top: 10px;
-        }
-        .team-member {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-        .team-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 40px;
-            background-color: var(--border);
-            object-fit: cover;
-            margin-bottom: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        }
-        .team-name {
-            font-size: 15px;
-            font-weight: 600;
-        }
+        .technovation-tag { text-align: center; font-size: 14px; color: var(--primary); font-weight: 600; margin-bottom: 20px; padding: 8px; background: rgba(79, 70, 229, 0.1); border-radius: 12px; }
+        .team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 10px; }
+        .team-member { display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .team-avatar { width: 80px; height: 80px; border-radius: 40px; background-color: var(--border); object-fit: cover; margin-bottom: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .team-name { font-size: 15px; font-weight: 600; }
 
         /* Nav */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0; background-color: var(--card-bg);
-            border-top: 1px solid var(--border); display: flex; justify-content: space-around;
-            padding: 12px 0; padding-bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 100;
-        }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background-color: var(--card-bg); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 12px 0; padding-bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 100; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-secondary); font-size: 12px; gap: 4px; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
         .nav-icon { font-size: 20px; }
@@ -201,7 +122,6 @@
 </head>
 <body>
 
-    <!-- App Header & Logo -->
     <div class="app-header">
         <img src="logo.jpeg" alt="Logo" class="app-logo" onerror="this.src='https://ui-avatars.com/api/?name=R+E&background=4f46e5&color=fff&rounded=true'">
         <div class="app-title">RealTracker</div>
@@ -217,7 +137,7 @@
         <div class="card">
             <div class="input-title">Быстрая запись</div>
             <div class="chat-input-wrapper">
-                <input type="text" class="chat-input" id="expense-input" placeholder="Напр: 200 сом на еду">
+                <input type="text" class="chat-input" id="expense-input" placeholder="Напр: 500 на макбук">
                 <button class="send-btn" onclick="addTransaction()">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -225,14 +145,12 @@
                     </svg>
                 </button>
             </div>
-            <div class="hint">Бот сам поймет категорию и сумму 🪄</div>
+            <div class="hint">Пополняй баланс, пиши траты или пополняй цели 🪄</div>
         </div>
 
         <div class="card tx-list">
             <div class="section-title">Последние операции</div>
-            <div id="tx-container">
-                <!-- Transactions injected via JS -->
-            </div>
+            <div id="tx-container"></div>
         </div>
     </div>
 
@@ -241,10 +159,9 @@
         <div class="card insight-box">
             <div style="font-size: 24px;">💡</div>
             <div style="font-size: 14px; line-height: 1.4;">
-                <strong>Умный инсайт:</strong> На этой неделе большая часть расходов уходит на категорию "Еда". Если сократить перекусы, сэкономишь ~3000 сом в месяц.
+                <strong>Умный инсайт:</strong> Твои главные расходы уходят в категорию "Транспорт". Попробуй чаще ходить пешком — это полезно и сэкономит бюджет!
             </div>
         </div>
-
         <div class="card">
             <div class="section-title">Структура расходов</div>
             <div class="chart-container">
@@ -256,69 +173,11 @@
     <!-- TAB: GOALS -->
     <div id="tab-goals" class="tab-content">
         <div class="card">
-            <div class="section-title">Мои цели 🎯</div>
-            
-            <div class="goal-item">
-                <div class="goal-header">
-                    <span>MacBook Air</span>
-                    <span>45%</span>
-                </div>
-                <div class="goal-bar-bg">
-                    <div class="goal-bar-fill" style="width: 45%;"></div>
-                </div>
-                <div class="goal-meta">
-                    <span>45 000 сом</span>
-                    <span>100 000 сом</span>
-                </div>
+            <div class="section-title">
+                <span>Мои цели 🎯</span>
+                <button class="add-btn" onclick="showGoalModal()">+ Добавить</button>
             </div>
-
-            <hr style="border: 0; border-top: 1px solid var(--border); margin: 16px 0;">
-
-            <div class="goal-item">
-                <div class="goal-header">
-                    <span>Поездка на Иссык-Куль</span>
-                    <span>80%</span>
-                </div>
-                <div class="goal-bar-bg">
-                    <div class="goal-bar-fill" style="width: 80%; background-color: #10b981;"></div>
-                </div>
-                <div class="goal-meta">
-                    <span>12 000 сом</span>
-                    <span>15 000 сом</span>
-                </div>
-            </div>
-
-            <hr style="border: 0; border-top: 1px solid var(--border); margin: 16px 0;">
-
-            <div class="goal-item">
-                <div class="goal-header">
-                    <span>Курсы по дизайну</span>
-                    <span>20%</span>
-                </div>
-                <div class="goal-bar-bg">
-                    <div class="goal-bar-fill" style="width: 20%; background-color: #ec4899;"></div>
-                </div>
-                <div class="goal-meta">
-                    <span>2 000 сом</span>
-                    <span>10 000 сом</span>
-                </div>
-            </div>
-
-            <hr style="border: 0; border-top: 1px solid var(--border); margin: 16px 0;">
-
-            <div class="goal-item">
-                <div class="goal-header">
-                    <span>Подушка безопасности</span>
-                    <span>60%</span>
-                </div>
-                <div class="goal-bar-bg">
-                    <div class="goal-bar-fill" style="width: 60%; background-color: #f59e0b;"></div>
-                </div>
-                <div class="goal-meta">
-                    <span>30 000 сом</span>
-                    <span>50 000 сом</span>
-                </div>
-            </div>
+            <div id="goals-container"></div>
         </div>
     </div>
 
@@ -326,50 +185,38 @@
     <div id="tab-team" class="tab-content">
         <div class="card">
             <div class="technovation-tag">🚀 A Project for Technovation Girls</div>
-            <div class="section-title" style="text-align: center;">Команда</div>
-            
+            <div class="section-title" style="text-align: center; display: block;">Команда</div>
             <div class="team-grid">
-                <div class="team-member">
-                    <img src="aiza.jpeg" alt="Aiza" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Aiza&background=4f46e5&color=fff'">
-                    <div class="team-name">Айза</div>
-                </div>
-                
-                <div class="team-member">
-                    <img src="meerim.jpeg" alt="Meerim" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Meerim&background=10b981&color=fff'">
-                    <div class="team-name">Мээрим</div>
-                </div>
+                <div class="team-member"><img src="aiza.jpeg" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Aiza&background=4f46e5&color=fff'"><div class="team-name">Айза</div></div>
+                <div class="team-member"><img src="meerim.jpeg" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Meerim&background=10b981&color=fff'"><div class="team-name">Мээрим</div></div>
+                <div class="team-member"><img src="ildana.jpeg" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Ildana&background=f59e0b&color=fff'"><div class="team-name">Ильдана</div></div>
+                <div class="team-member"><img src="unknown.jpeg" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Team&background=ec4899&color=fff'"><div class="team-name">Незнаю</div></div>
+            </div>
+        </div>
+    </div>
 
-                <div class="team-member">
-                    <img src="ildana.jpeg" alt="Ildana" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Ildana&background=f59e0b&color=fff'">
-                    <div class="team-name">Ильдана</div>
-                </div>
-
-                <div class="team-member">
-                    <img src="unknown.jpeg" alt="Team Member" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Team&background=ec4899&color=fff'">
-                    <div class="team-name">Незнаю</div>
-                </div>
+    <!-- MODAL FOR NEW GOAL -->
+    <div id="goal-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h3 style="margin-bottom: 16px;">Новая финансовая цель</h3>
+            <div class="input-title">На что копим?</div>
+            <input type="text" id="new-goal-name" class="chat-input" placeholder="Напр: Кроссовки" style="width: 100%; margin-bottom: 12px;">
+            <div class="input-title">Сколько нужно собрать? (сом)</div>
+            <input type="number" id="new-goal-target" class="chat-input" placeholder="Напр: 10000" style="width: 100%; margin-bottom: 20px;">
+            
+            <div style="display: flex; gap: 8px;">
+                <button onclick="hideGoalModal()" style="flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-color); color: var(--text-main); font-weight: 600;">Отмена</button>
+                <button onclick="saveNewGoal()" style="flex: 1; padding: 12px; border-radius: 12px; border: none; background: var(--primary); color: white; font-weight: 600;">Создать</button>
             </div>
         </div>
     </div>
 
     <!-- Bottom Nav -->
     <div class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('home', this)">
-            <span class="nav-icon">🏠</span>
-            <span>Главная</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('analytics', this)">
-            <span class="nav-icon">📊</span>
-            <span>Аналитика</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('goals', this)">
-            <span class="nav-icon">🎯</span>
-            <span>Цели</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('team', this)">
-            <span class="nav-icon">👩🏻‍💻</span>
-            <span>Команда</span>
-        </div>
+        <div class="nav-item active" onclick="switchTab('home', this)"><span class="nav-icon">🏠</span><span>Главная</span></div>
+        <div class="nav-item" onclick="switchTab('analytics', this)"><span class="nav-icon">📊</span><span>Аналитика</span></div>
+        <div class="nav-item" onclick="switchTab('goals', this)"><span class="nav-icon">🎯</span><span>Цели</span></div>
+        <div class="nav-item" onclick="switchTab('team', this)"><span class="nav-icon">👩🏻‍💻</span><span>Команда</span></div>
     </div>
 
     <script>
@@ -390,91 +237,172 @@
             tg.HapticFeedback.selectionChanged();
         }
 
+        // --- STATE & LOCAL STORAGE ---
         let balance = 12450;
         let transactions = [
-            { category: "развлечения", amount: -450, icon: "🍿", type: "expense" },
-            { category: "пополнение", amount: 5000, icon: "💰", type: "income" }
+            { category: "Пополнение", amount: 5000, icon: "💰", type: "income" },
+            { category: "Развлечения", amount: -450, icon: "🍿", type: "expense" }
+        ];
+
+        let goals = [
+            { name: "MacBook Air", keywords: ["мак", "macbook", "ноут", "комп"], current: 45000, target: 100000, color: "#4f46e5" },
+            { name: "Иссык-Куль", keywords: ["иссык", "озеро", "отдых", "поездк"], current: 12000, target: 15000, color: "#10b981" }
         ];
 
         const savedBalance = localStorage.getItem('rt_balance');
         const savedTxs = localStorage.getItem('rt_txs');
+        const savedGoals = localStorage.getItem('rt_goals');
         
         if (savedBalance !== null) balance = parseInt(savedBalance);
         if (savedTxs !== null) transactions = JSON.parse(savedTxs);
+        if (savedGoals !== null) goals = JSON.parse(savedGoals);
 
         function saveState() {
             localStorage.setItem('rt_balance', balance);
             localStorage.setItem('rt_txs', JSON.stringify(transactions));
+            localStorage.setItem('rt_goals', JSON.stringify(goals));
         }
 
+        // --- MODAL LOGIC (ADD GOAL) ---
+        function showGoalModal() {
+            document.getElementById('goal-modal').style.display = 'flex';
+        }
+
+        function hideGoalModal() {
+            document.getElementById('goal-modal').style.display = 'none';
+            document.getElementById('new-goal-name').value = '';
+            document.getElementById('new-goal-target').value = '';
+        }
+
+        function saveNewGoal() {
+            const name = document.getElementById('new-goal-name').value.trim();
+            const target = parseInt(document.getElementById('new-goal-target').value);
+            
+            if (!name || isNaN(target) || target <= 0) {
+                if (tg.showAlert) tg.showAlert("Пожалуйста, введите название и правильную сумму.");
+                else alert("Введите название и сумму!");
+                return;
+            }
+
+            // Create automatic keywords based on the first word of the goal
+            const keywords = name.toLowerCase().split(' ').map(w => w.substring(0, 4));
+            const colors = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4'];
+            const color = colors[goals.length % colors.length];
+
+            goals.push({
+                name: name,
+                keywords: keywords,
+                current: 0,
+                target: target,
+                color: color
+            });
+
+            saveState();
+            updateUI();
+            hideGoalModal();
+            tg.HapticFeedback.notificationOccurred('success');
+        }
+
+        // --- DELETE GOAL ---
+        function deleteGoal(index) {
+            // Using native confirm for reliability across platforms
+            if (confirm(`Удалить цель "${goals[index].name}"?`)) {
+                goals.splice(index, 1);
+                saveState();
+                updateUI();
+                tg.HapticFeedback.impactOccurred('medium');
+            }
+        }
+
+        // --- RENDER UI ---
         function updateUI() {
             document.getElementById('main-balance').innerText = balance.toLocaleString('ru-RU') + " сом";
             
+            // Transactions
             const container = document.getElementById('tx-container');
             container.innerHTML = '';
-            
-            if (transactions.length === 0) {
-                container.innerHTML = '<div style="text-align:center; color: var(--text-secondary); padding: 10px;">Нет операций</div>';
-            }
-
+            if (transactions.length === 0) container.innerHTML = '<div style="text-align:center; color: var(--text-secondary); padding: 10px;">Нет операций</div>';
             transactions.forEach(tx => {
                 const isInc = tx.type === 'income';
-                const amountClass = isInc ? 'amount-income' : 'amount-expense';
-                const sign = isInc ? '+' : '-';
-                const iconClass = isInc ? 'icon-income' : 'icon-expense';
-                
                 const html = `
                     <div class="tx-item">
-                        <div class="tx-icon ${iconClass}">${tx.icon}</div>
+                        <div class="tx-icon ${isInc ? 'icon-income' : 'icon-expense'}">${tx.icon}</div>
                         <div class="tx-details">
                             <div class="tx-title">${tx.category}</div>
                             <div class="tx-date">Только что</div>
                         </div>
-                        <div class="tx-amount ${amountClass}">${sign}${Math.abs(tx.amount)} сом</div>
+                        <div class="tx-amount ${isInc ? 'amount-income' : 'amount-expense'}">${isInc ? '+' : '-'}${Math.abs(tx.amount)} сом</div>
                     </div>
                 `;
                 container.insertAdjacentHTML('beforeend', html);
             });
+
+            // Goals
+            const goalsContainer = document.getElementById('goals-container');
+            goalsContainer.innerHTML = '';
+            if (goals.length === 0) goalsContainer.innerHTML = '<div style="text-align:center; color: var(--text-secondary); padding: 10px;">У вас пока нет целей</div>';
+            goals.forEach((g, index) => {
+                const percent = Math.min(100, Math.round((g.current / g.target) * 100));
+                const html = `
+                    <div class="goal-item">
+                        <div class="goal-header">
+                            <span style="font-weight: 600;">${g.name} <button class="delete-btn" onclick="deleteGoal(${index})">🗑️</button></span>
+                            <span style="color: ${g.color}; font-weight: 700;">${percent}%</span>
+                        </div>
+                        <div class="goal-bar-bg">
+                            <div class="goal-bar-fill" style="width: ${percent}%; background-color: ${g.color};"></div>
+                        </div>
+                        <div class="goal-meta">
+                            <span>${g.current.toLocaleString('ru-RU')} сом</span>
+                            <span>${g.target.toLocaleString('ru-RU')} сом</span>
+                        </div>
+                    </div>
+                    <hr style="border: 0; border-top: 1px solid var(--border); margin: 16px 0;">
+                `;
+                goalsContainer.insertAdjacentHTML('beforeend', html);
+            });
+
             updateChart();
         }
 
+        // --- CHART ---
         let expenseChart;
         function initChart() {
             const ctx = document.getElementById('expenseChart').getContext('2d');
             expenseChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Еда', 'Транспорт', 'Развлечения', 'Разное'],
+                    labels: ['Еда', 'Транспорт', 'Развлечения', 'Разное', 'Цели'],
                     datasets: [{
-                        data: [45, 20, 25, 10],
-                        backgroundColor: ['#ef4444', '#3b82f6', '#8b5cf6', '#f59e0b'],
+                        data: [45, 20, 15, 10, 10],
+                        backgroundColor: ['#ef4444', '#3b82f6', '#8b5cf6', '#f59e0b', '#10b981'],
                         borderWidth: 0, cutout: '75%'
                     }]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'right', labels: { color: tg.colorScheme === 'dark' ? '#f9fafb' : '#1f2937' } }
-                    }
+                    plugins: { legend: { position: 'right', labels: { color: tg.colorScheme === 'dark' ? '#f9fafb' : '#1f2937' } } }
                 }
             });
         }
 
         function updateChart() {
             if (!expenseChart) return;
-            let food = 10, trans = 10, ent = 10, misc = 10;
+            let food = 1, trans = 1, ent = 1, misc = 1, goalExp = 1;
             transactions.forEach(tx => {
                 if(tx.type === 'expense') {
-                    if(tx.category.includes('ед') || tx.category.includes('кофе')) food += Math.abs(tx.amount);
-                    else if(tx.category.includes('такси')) trans += Math.abs(tx.amount);
-                    else if(tx.category.includes('разв')) ent += Math.abs(tx.amount);
+                    if(tx.category.includes('Еда')) food += Math.abs(tx.amount);
+                    else if(tx.category.includes('Транспорт')) trans += Math.abs(tx.amount);
+                    else if(tx.category.includes('Развлечения')) ent += Math.abs(tx.amount);
+                    else if(tx.category.includes('Отложено')) goalExp += Math.abs(tx.amount);
                     else misc += Math.abs(tx.amount);
                 }
             });
-            expenseChart.data.datasets[0].data = [food, trans, ent, misc];
+            expenseChart.data.datasets[0].data = [food, trans, ent, misc, goalExp];
             expenseChart.update();
         }
 
+        // --- SMART NLP INPUT ---
         function addTransaction() {
             const input = document.getElementById('expense-input');
             const text = input.value.trim().toLowerCase();
@@ -482,23 +410,36 @@
 
             const amountMatch = text.match(/\d+/);
             if (!amountMatch) {
-                tg.showAlert("Не вижу сумму! Напиши например: 200 на еду");
+                if (tg.showAlert) tg.showAlert("Не вижу сумму! Напиши например: 200 на еду");
+                else alert("Не вижу сумму!");
                 return;
             }
 
             const amount = parseInt(amountMatch[0]);
-            let category = "разное";
+            let category = "Разное";
             let icon = "🛍️";
             let type = "expense";
 
-            if (text.includes("получил") || text.includes("зп") || text.includes("дарил")) {
-                type = "income"; icon = "💰"; category = "пополнение";
-            } else if (text.includes("кофе") || text.includes("ед") || text.includes("бургер")) {
-                category = "еда / кофе"; icon = "☕️";
-            } else if (text.includes("такси") || text.includes("автобус")) {
-                category = "транспорт"; icon = "🚕";
-            } else if (text.includes("кино") || text.includes("развл")) {
-                category = "развлечения"; icon = "🍿";
+            if (/(получил|пополн|зп|дарил|родител|перевод|доход|подарок|плюс)/i.test(text)) {
+                type = "income"; icon = "💰"; category = "Пополнение";
+            } else {
+                let matchedGoal = null;
+                for (let g of goals) {
+                    if (g.keywords.some(kw => text.includes(kw))) {
+                        matchedGoal = g; break;
+                    }
+                }
+
+                if (matchedGoal) {
+                    type = "expense"; icon = "🎯"; category = "Отложено на " + matchedGoal.name;
+                    matchedGoal.current += amount; 
+                } else if (/(кофе|ед|бургер|кафе|ресторан|пицц|суши|продукты)/i.test(text)) {
+                    category = "Еда / Кофе"; icon = "☕️";
+                } else if (/(такси|автобус|проезд|яндекс|бензин)/i.test(text)) {
+                    category = "Транспорт"; icon = "🚕";
+                } else if (/(кино|развл|клуб|игр|бар)/i.test(text)) {
+                    category = "Развлечения"; icon = "🍿";
+                }
             }
 
             if (type === 'income') balance += amount;
