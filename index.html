@@ -114,6 +114,8 @@
         .tx-amount { font-weight: 600; font-size: 15px; }
         .amount-expense { color: var(--expense); }
         .amount-income { color: var(--income); }
+        .tx-delete-btn { background: none; border: none; color: #ef4444; font-size: 16px; cursor: pointer; padding: 4px; margin-left: 8px; opacity: 0.6; transition: opacity 0.2s; }
+        .tx-delete-btn:active { opacity: 1; transform: scale(0.9); }
 
         /* Insights & Charts */
         .insight-box { border-left: 4px solid var(--accent); display: flex; align-items: flex-start; gap: 12px; }
@@ -247,7 +249,7 @@
                     <div class="team-member"><img src="Диера.jpeg" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Diera&background=4f46e5&color=fff'"><div class="team-name">Диера</div></div>
                     <div class="team-member"><img src="meerim.jpeg" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Meerim&background=10b981&color=fff'"><div class="team-name">Мээрим</div></div>
                     <div class="team-member"><img src="ildana.jpeg" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Ildana&background=f59e0b&color=fff'"><div class="team-name">Ильдана</div></div>
-                    <div class="team-member"><img src="Азимай.jpeg" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Azimai&background=ec4899&color=fff'"><div class="team-name">Азимай</div></div>
+                    <div class="team-member"><img src="azimai.jpeg" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Azimai&background=ec4899&color=fff'"><div class="team-name">Азимай</div></div>
                 </div>
             </div>
         </div>
@@ -289,21 +291,6 @@
 
         // --- AUTH LOGIC (REGISTRATION) ---
         function checkAuth() {
-            // We NO LONGER check localStorage for auth here, to FORCE the registration screen for the demo
-            // every time the app reloads, but we keep the actual data (balance) in localStorage.
-            // If you want registration to happen ONLY ONCE per device, uncomment the lines below:
-            /*
-            const user = localStorage.getItem('rt_user_profile');
-            if (user) {
-                const userData = JSON.parse(user);
-                document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('main-app').style.display = 'block';
-                document.getElementById('greeting-title').innerText = userData.username ? `Привет, ${userData.username}!` : "RealTracker";
-                return;
-            }
-            */
-            
-            // Show registration screen
             document.getElementById('auth-screen').style.display = 'flex';
             document.getElementById('main-app').style.display = 'none';
         }
@@ -321,12 +308,12 @@
 
             localStorage.setItem('rt_user_profile', JSON.stringify({ username: username, email: email, age: age }));
             
-            // Clear past demo data on registration to show a clean state!
-            if (!localStorage.getItem('rt_has_cleared_once')) {
+            // Clear past demo data on registration to show a clean state
+            if (!localStorage.getItem('rt_has_cleared_once_v10')) {
                 balance = 0;
                 transactions = [];
                 goals = [];
-                localStorage.setItem('rt_has_cleared_once', 'true');
+                localStorage.setItem('rt_has_cleared_once_v10', 'true');
                 saveState();
             }
 
@@ -347,7 +334,6 @@
             document.getElementById('tab-' + tabId).classList.add('active');
             el.classList.add('active');
             
-            // Only draw chart when switching to analytics tab to avoid canvas sizing bugs
             if(tabId === 'analytics') {
                 updateChart();
             }
@@ -356,9 +342,9 @@
         }
 
         // --- STATE & LOCAL STORAGE ---
-        let balance = 0; // Starts at 0 now
-        let transactions = []; // Starts empty
-        let goals = []; // Starts empty
+        let balance = 0;
+        let transactions = [];
+        let goals = [];
 
         const savedBalance = localStorage.getItem('rt_balance');
         const savedTxs = localStorage.getItem('rt_txs');
@@ -374,7 +360,7 @@
             localStorage.setItem('rt_goals', JSON.stringify(goals));
         }
 
-        // --- MODAL LOGIC (ADD GOAL) ---
+        // --- GOALS LOGIC ---
         function showGoalModal() { document.getElementById('goal-modal').style.display = 'flex'; }
         function hideGoalModal() { document.getElementById('goal-modal').style.display = 'none'; document.getElementById('new-goal-name').value = ''; document.getElementById('new-goal-target').value = ''; }
 
@@ -405,11 +391,38 @@
             }
         }
 
+        // --- TRANSACTION UNDO LOGIC ---
+        function deleteTransaction(index) {
+            const tx = transactions[index];
+            if (confirm(`Убрать операцию "${tx.category}" на ${Math.abs(tx.amount)} сом?`)) {
+                // Reverse the balance
+                if (tx.type === 'income') {
+                    balance -= tx.amount; 
+                } else {
+                    balance += Math.abs(tx.amount); 
+                }
+                
+                // If it was a goal contribution, reverse the goal progress
+                if (tx.goalName) {
+                    const goal = goals.find(g => g.name === tx.goalName);
+                    if (goal) {
+                        goal.current -= Math.abs(tx.amount);
+                        if (goal.current < 0) goal.current = 0;
+                    }
+                }
+
+                // Remove from array
+                transactions.splice(index, 1);
+                saveState();
+                updateUI();
+                tg.HapticFeedback.impactOccurred('medium');
+            }
+        }
+
         // --- RENDER UI ---
         function updateUI() {
             document.getElementById('main-balance').innerText = balance.toLocaleString('ru-RU') + " сом";
             
-            // Show/hide examples block based on if there are transactions
             const examplesBlock = document.getElementById('examples-block');
             if (transactions.length === 0) {
                 examplesBlock.style.display = 'block';
@@ -423,7 +436,7 @@
                 container.innerHTML = '<div style="text-align:center; color: var(--text-secondary); padding: 20px 10px;">Вы еще не добавили ни одной операции. <br>Напишите что-нибудь в строке ввода! 🪄</div>';
             }
             
-            transactions.forEach(tx => {
+            transactions.forEach((tx, index) => {
                 const isInc = tx.type === 'income';
                 const html = `
                     <div class="tx-item">
@@ -433,6 +446,7 @@
                             <div class="tx-date">Только что</div>
                         </div>
                         <div class="tx-amount ${isInc ? 'amount-income' : 'amount-expense'}">${isInc ? '+' : '-'}${Math.abs(tx.amount)} сом</div>
+                        <button class="tx-delete-btn" onclick="deleteTransaction(${index})" title="Удалить операцию">🗑️</button>
                     </div>
                 `;
                 container.insertAdjacentHTML('beforeend', html);
@@ -465,7 +479,6 @@
                 goalsContainer.insertAdjacentHTML('beforeend', html);
             });
             
-            // Update insight text if empty
             if (transactions.length > 0) {
                 document.getElementById('analytics-insight').innerHTML = '<strong>Умный инсайт:</strong> Ваши расходы успешно фиксируются. Так держать! Если добавите больше трат, я покажу, где можно сэкономить.';
             } else {
@@ -476,7 +489,6 @@
         // --- CHART ---
         let expenseChart;
         function updateChart() {
-            // Check if we have any expenses to show
             const hasExpenses = transactions.some(tx => tx.type === 'expense');
             const wrapper = document.getElementById('chart-wrapper');
             
@@ -486,7 +498,6 @@
                 return;
             }
             
-            // If we have expenses, setup canvas
             if (!expenseChart) {
                 wrapper.innerHTML = '<canvas id="expenseChart"></canvas>';
                 const ctx = document.getElementById('expenseChart').getContext('2d');
@@ -507,7 +518,6 @@
                 });
             }
 
-            // Calculate actual totals
             let food = 0, trans = 0, ent = 0, misc = 0, goalExp = 0;
             transactions.forEach(tx => {
                 if(tx.type === 'expense') {
@@ -539,6 +549,7 @@
             let category = "Разное";
             let icon = "🛍️";
             let type = "expense";
+            let goalNameSaved = null; // To track if this went to a goal
 
             if (/(получил|пополн|зп|дарил|родител|перевод|доход|подарок|плюс|дал|кинул|скинул)/i.test(text)) {
                 type = "income"; icon = "💰"; category = "Пополнение";
@@ -553,6 +564,7 @@
                 if (matchedGoal) {
                     type = "expense"; icon = "🎯"; category = "Отложено на " + matchedGoal.name;
                     matchedGoal.current += amount; 
+                    goalNameSaved = matchedGoal.name;
                 } else if (/(кофе|ед|бургер|кафе|ресторан|пицц|суши|продукты|шаурм)/i.test(text)) {
                     category = "Еда / Кофе"; icon = "☕️";
                 } else if (/(такси|автобус|проезд|яндекс|бензин)/i.test(text)) {
@@ -565,7 +577,8 @@
             if (type === 'income') balance += amount;
             else balance -= amount;
 
-            transactions.unshift({ category, amount: type === 'income' ? amount : -amount, icon, type });
+            // Save goalName so we can reverse it if user deletes transaction
+            transactions.unshift({ category, amount: type === 'income' ? amount : -amount, icon, type, goalName: goalNameSaved });
             if(transactions.length > 15) transactions.pop();
 
             saveState();
