@@ -51,6 +51,27 @@
         .app-logo { width: 40px; height: 40px; border-radius: 12px; object-fit: contain; background: white; padding: 4px; }
         .app-title { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
 
+        /* Auth Screen */
+        #auth-screen {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-color); z-index: 2000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .auth-card {
+            background: var(--card-bg); padding: 32px 24px; border-radius: 20px; 
+            width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .auth-card h2 { margin-bottom: 8px; font-size: 24px; }
+        .auth-card p { color: var(--text-secondary); margin-bottom: 24px; font-size: 14px; }
+        .auth-input { width: 100%; padding: 14px; margin-bottom: 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-color); color: var(--text-main); font-size: 15px; outline: none; }
+        .auth-input:focus { border-color: var(--primary); }
+        .auth-btn { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--primary); color: white; font-weight: 600; font-size: 16px; cursor: pointer; transition: transform 0.1s; }
+        .auth-btn:active { transform: scale(0.98); }
+
+        #main-app { display: none; } /* Hidden until logged in */
+
         /* Tab Content */
         .tab-content { display: none; animation: fadeIn 0.3s ease-out; }
         .tab-content.active { display: block; }
@@ -100,7 +121,8 @@
         .goal-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); }
         
         .add-btn { background: var(--primary); color: white; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 600; font-size: 14px; cursor: pointer; }
-        .delete-btn { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 16px; margin-left: 8px; }
+        .delete-btn { background: #fee2e2; border: none; color: #ef4444; border-radius: 6px; padding: 4px 8px; cursor: pointer; font-size: 12px; font-weight: 600; margin-left: 8px; transition: background 0.2s; }
+        .delete-btn:active { background: #fecaca; }
 
         /* Modal Overlay */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 16px; animation: fadeIn 0.2s ease-out; }
@@ -122,102 +144,121 @@
 </head>
 <body>
 
-    <div class="app-header">
-        <img src="logo.jpeg" alt="Logo" class="app-logo" onerror="this.src='https://ui-avatars.com/api/?name=R+E&background=4f46e5&color=fff&rounded=true'">
-        <div class="app-title">RealTracker</div>
-    </div>
-
-    <!-- TAB: HOME -->
-    <div id="tab-home" class="tab-content active">
-        <div class="balance-card">
-            <div class="balance-title">Текущий баланс</div>
-            <div class="balance-amount" id="main-balance">0 сом</div>
-        </div>
-
-        <div class="card">
-            <div class="input-title">Быстрая запись</div>
-            <div class="chat-input-wrapper">
-                <input type="text" class="chat-input" id="expense-input" placeholder="Напр: 500 на макбук">
-                <button class="send-btn" onclick="addTransaction()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="22" y1="2" x2="11" y2="13"></line>
-                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                    </svg>
-                </button>
-            </div>
-            <div class="hint">Пополняй баланс, пиши траты или пополняй цели 🪄</div>
-        </div>
-
-        <div class="card tx-list">
-            <div class="section-title">Последние операции</div>
-            <div id="tx-container"></div>
-        </div>
-    </div>
-
-    <!-- TAB: ANALYTICS -->
-    <div id="tab-analytics" class="tab-content">
-        <div class="card insight-box">
-            <div style="font-size: 24px;">💡</div>
-            <div style="font-size: 14px; line-height: 1.4;">
-                <strong>Умный инсайт:</strong> Твои главные расходы уходят в категорию "Транспорт". Попробуй чаще ходить пешком — это полезно и сэкономит бюджет!
-            </div>
-        </div>
-        <div class="card">
-            <div class="section-title">Структура расходов</div>
-            <div class="chart-container">
-                <canvas id="expenseChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- TAB: GOALS -->
-    <div id="tab-goals" class="tab-content">
-        <div class="card">
-            <div class="section-title">
-                <span>Мои цели 🎯</span>
-                <button class="add-btn" onclick="showGoalModal()">+ Добавить</button>
-            </div>
-            <div id="goals-container"></div>
-        </div>
-    </div>
-
-    <!-- TAB: TEAM -->
-    <div id="tab-team" class="tab-content">
-        <div class="card">
-            <div class="technovation-tag">🚀 A Project for Technovation Girls</div>
-            <div class="section-title" style="text-align: center; display: block;">Команда</div>
-            <div class="team-grid">
-                <div class="team-member"><img src="aiza.jpeg" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Aiza&background=4f46e5&color=fff'"><div class="team-name">Айза</div></div>
-                <div class="team-member"><img src="meerim.jpeg" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Meerim&background=10b981&color=fff'"><div class="team-name">Мээрим</div></div>
-                <div class="team-member"><img src="ildana.jpeg" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Ildana&background=f59e0b&color=fff'"><div class="team-name">Ильдана</div></div>
-                <div class="team-member"><img src="unknown.jpeg" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Team&background=ec4899&color=fff'"><div class="team-name">Незнаю</div></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL FOR NEW GOAL -->
-    <div id="goal-modal" class="modal-overlay">
-        <div class="modal-card">
-            <h3 style="margin-bottom: 16px;">Новая финансовая цель</h3>
-            <div class="input-title">На что копим?</div>
-            <input type="text" id="new-goal-name" class="chat-input" placeholder="Напр: Кроссовки" style="width: 100%; margin-bottom: 12px;">
-            <div class="input-title">Сколько нужно собрать? (сом)</div>
-            <input type="number" id="new-goal-target" class="chat-input" placeholder="Напр: 10000" style="width: 100%; margin-bottom: 20px;">
+    <!-- REGISTRATION SCREEN -->
+    <div id="auth-screen">
+        <div class="auth-card">
+            <img src="logo.jpeg" alt="Logo" style="width: 60px; height: 60px; border-radius: 16px; margin-bottom: 16px;" onerror="this.src='https://ui-avatars.com/api/?name=R+E&background=4f46e5&color=fff&rounded=true'">
+            <h2>Регистрация</h2>
+            <p>Создай профиль, чтобы начать вести бюджет</p>
             
-            <div style="display: flex; gap: 8px;">
-                <button onclick="hideGoalModal()" style="flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-color); color: var(--text-main); font-weight: 600;">Отмена</button>
-                <button onclick="saveNewGoal()" style="flex: 1; padding: 12px; border-radius: 12px; border: none; background: var(--primary); color: white; font-weight: 600;">Создать</button>
-            </div>
+            <input type="text" id="reg-username" class="auth-input" placeholder="Username (Имя)">
+            <input type="email" id="reg-email" class="auth-input" placeholder="Email адрес">
+            <input type="number" id="reg-age" class="auth-input" placeholder="Ваш возраст">
+            
+            <button class="auth-btn" onclick="registerUser()">Начать работу 🚀</button>
         </div>
     </div>
 
-    <!-- Bottom Nav -->
-    <div class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('home', this)"><span class="nav-icon">🏠</span><span>Главная</span></div>
-        <div class="nav-item" onclick="switchTab('analytics', this)"><span class="nav-icon">📊</span><span>Аналитика</span></div>
-        <div class="nav-item" onclick="switchTab('goals', this)"><span class="nav-icon">🎯</span><span>Цели</span></div>
-        <div class="nav-item" onclick="switchTab('team', this)"><span class="nav-icon">👩🏻‍💻</span><span>Команда</span></div>
-    </div>
+    <!-- MAIN APP CONTAINER -->
+    <div id="main-app">
+        <div class="app-header">
+            <img src="logo.jpeg" alt="Logo" class="app-logo" onerror="this.src='https://ui-avatars.com/api/?name=R+E&background=4f46e5&color=fff&rounded=true'">
+            <div class="app-title" id="greeting-title">RealTracker</div>
+        </div>
+
+        <!-- TAB: HOME -->
+        <div id="tab-home" class="tab-content active">
+            <div class="balance-card">
+                <div class="balance-title">Текущий баланс</div>
+                <div class="balance-amount" id="main-balance">0 сом</div>
+            </div>
+
+            <div class="card">
+                <div class="input-title">Быстрая запись</div>
+                <div class="chat-input-wrapper">
+                    <input type="text" class="chat-input" id="expense-input" placeholder="Напр: 500 на кроссовки">
+                    <button class="send-btn" onclick="addTransaction()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
+                <div class="hint">Пополняй баланс, пиши траты или пополняй цели 🪄</div>
+            </div>
+
+            <div class="card tx-list">
+                <div class="section-title">Последние операции</div>
+                <div id="tx-container"></div>
+            </div>
+        </div>
+
+        <!-- TAB: ANALYTICS -->
+        <div id="tab-analytics" class="tab-content">
+            <div class="card insight-box">
+                <div style="font-size: 24px;">💡</div>
+                <div style="font-size: 14px; line-height: 1.4;">
+                    <strong>Умный инсайт:</strong> Твои главные расходы уходят в категорию "Транспорт". Попробуй чаще ходить пешком - это полезно и сэкономит карманные деньги!
+                </div>
+            </div>
+            <div class="card">
+                <div class="section-title">Структура расходов</div>
+                <div class="chart-container">
+                    <canvas id="expenseChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: GOALS -->
+        <div id="tab-goals" class="tab-content">
+            <div class="card">
+                <div class="section-title">
+                    <span>Мои цели 🎯</span>
+                    <button class="add-btn" onclick="showGoalModal()">+ Добавить</button>
+                </div>
+                <div id="goals-container"></div>
+            </div>
+        </div>
+
+        <!-- TAB: TEAM -->
+        <div id="tab-team" class="tab-content">
+            <div class="card">
+                <div class="technovation-tag">🚀 A Project for Technovation Girls</div>
+                <div class="section-title" style="text-align: center; display: block;">Команда</div>
+                <div class="team-grid">
+                    <!-- TEAM UPDATED -->
+                    <div class="team-member"><img src="Диера.jpeg" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Diera&background=4f46e5&color=fff'"><div class="team-name">Диера</div></div>
+                    <div class="team-member"><img src="meerim.jpeg" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Meerim&background=10b981&color=fff'"><div class="team-name">Мээрим</div></div>
+                    <div class="team-member"><img src="ildana.jpeg" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Ildana&background=f59e0b&color=fff'"><div class="team-name">Ильдана</div></div>
+                    <div class="team-member"><img src="Азимай.jpeg" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Azimai&background=ec4899&color=fff'"><div class="team-name">Азимай</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL FOR NEW GOAL -->
+        <div id="goal-modal" class="modal-overlay">
+            <div class="modal-card">
+                <h3 style="margin-bottom: 16px;">Новая финансовая цель</h3>
+                <div class="input-title">На что копим?</div>
+                <input type="text" id="new-goal-name" class="chat-input" placeholder="Напр: Кроссовки" style="width: 100%; margin-bottom: 12px;">
+                <div class="input-title">Сколько нужно собрать? (сом)</div>
+                <input type="number" id="new-goal-target" class="chat-input" placeholder="Напр: 10000" style="width: 100%; margin-bottom: 20px;">
+                
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="hideGoalModal()" style="flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-color); color: var(--text-main); font-weight: 600;">Отмена</button>
+                    <button onclick="saveNewGoal()" style="flex: 1; padding: 12px; border-radius: 12px; border: none; background: var(--primary); color: white; font-weight: 600;">Создать</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Nav -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('home', this)"><span class="nav-icon">🏠</span><span>Главная</span></div>
+            <div class="nav-item" onclick="switchTab('analytics', this)"><span class="nav-icon">📊</span><span>Аналитика</span></div>
+            <div class="nav-item" onclick="switchTab('goals', this)"><span class="nav-icon">🎯</span><span>Цели</span></div>
+            <div class="nav-item" onclick="switchTab('team', this)"><span class="nav-icon">👩🏻‍💻</span><span>Команда</span></div>
+        </div>
+    </div> <!-- END MAIN APP -->
 
     <script>
         const tg = window.Telegram.WebApp;
@@ -229,6 +270,49 @@
             else document.body.classList.remove('dark-theme');
         });
 
+        // --- AUTH LOGIC (REGISTRATION) ---
+        function checkAuth() {
+            const user = localStorage.getItem('rt_user_profile');
+            if (user) {
+                // User is registered
+                const userData = JSON.parse(user);
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
+                // Personalize the header
+                document.getElementById('greeting-title').innerText = userData.username ? `Привет, ${userData.username}!` : "RealTracker";
+            } else {
+                // Show registration
+                document.getElementById('auth-screen').style.display = 'flex';
+                document.getElementById('main-app').style.display = 'none';
+            }
+        }
+
+        function registerUser() {
+            const username = document.getElementById('reg-username').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const age = document.getElementById('reg-age').value.trim();
+
+            if (!username || !email || !age) {
+                if (tg.showAlert) tg.showAlert("Пожалуйста, заполните все поля!");
+                else alert("Пожалуйста, заполните все поля!");
+                return;
+            }
+
+            // Save user data to local storage
+            localStorage.setItem('rt_user_profile', JSON.stringify({
+                username: username,
+                email: email,
+                age: age
+            }));
+
+            tg.HapticFeedback.notificationOccurred('success');
+            checkAuth(); // Hide auth screen, show main app
+        }
+
+        // Run auth check on load
+        checkAuth();
+
+        // --- TABS LOGIC ---
         function switchTab(tabId, el) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
@@ -245,8 +329,8 @@
         ];
 
         let goals = [
-            { name: "MacBook Air", keywords: ["мак", "macbook", "ноут", "комп"], current: 45000, target: 100000, color: "#4f46e5" },
-            { name: "Иссык-Куль", keywords: ["иссык", "озеро", "отдых", "поездк"], current: 12000, target: 15000, color: "#10b981" }
+            { name: "Новый телефон", keywords: ["телефон", "айфон", "смартфон", "сотка"], current: 45000, target: 100000, color: "#4f46e5" },
+            { name: "Поездка с классом", keywords: ["поездк", "горы", "тур", "иссык"], current: 12000, target: 15000, color: "#10b981" }
         ];
 
         const savedBalance = localStorage.getItem('rt_balance');
@@ -264,15 +348,8 @@
         }
 
         // --- MODAL LOGIC (ADD GOAL) ---
-        function showGoalModal() {
-            document.getElementById('goal-modal').style.display = 'flex';
-        }
-
-        function hideGoalModal() {
-            document.getElementById('goal-modal').style.display = 'none';
-            document.getElementById('new-goal-name').value = '';
-            document.getElementById('new-goal-target').value = '';
-        }
+        function showGoalModal() { document.getElementById('goal-modal').style.display = 'flex'; }
+        function hideGoalModal() { document.getElementById('goal-modal').style.display = 'none'; document.getElementById('new-goal-name').value = ''; document.getElementById('new-goal-target').value = ''; }
 
         function saveNewGoal() {
             const name = document.getElementById('new-goal-name').value.trim();
@@ -284,32 +361,20 @@
                 return;
             }
 
-            // Create automatic keywords based on the first word of the goal
             const keywords = name.toLowerCase().split(' ').map(w => w.substring(0, 4));
             const colors = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4'];
             const color = colors[goals.length % colors.length];
 
-            goals.push({
-                name: name,
-                keywords: keywords,
-                current: 0,
-                target: target,
-                color: color
-            });
-
-            saveState();
-            updateUI();
-            hideGoalModal();
+            goals.push({ name: name, keywords: keywords, current: 0, target: target, color: color });
+            saveState(); updateUI(); hideGoalModal();
             tg.HapticFeedback.notificationOccurred('success');
         }
 
         // --- DELETE GOAL ---
         function deleteGoal(index) {
-            // Using native confirm for reliability across platforms
-            if (confirm(`Удалить цель "${goals[index].name}"?`)) {
+            if (confirm(`Убрать цель "${goals[index].name}"?`)) {
                 goals.splice(index, 1);
-                saveState();
-                updateUI();
+                saveState(); updateUI();
                 tg.HapticFeedback.impactOccurred('medium');
             }
         }
@@ -318,7 +383,6 @@
         function updateUI() {
             document.getElementById('main-balance').innerText = balance.toLocaleString('ru-RU') + " сом";
             
-            // Transactions
             const container = document.getElementById('tx-container');
             container.innerHTML = '';
             if (transactions.length === 0) container.innerHTML = '<div style="text-align:center; color: var(--text-secondary); padding: 10px;">Нет операций</div>';
@@ -337,7 +401,6 @@
                 container.insertAdjacentHTML('beforeend', html);
             });
 
-            // Goals
             const goalsContainer = document.getElementById('goals-container');
             goalsContainer.innerHTML = '';
             if (goals.length === 0) goalsContainer.innerHTML = '<div style="text-align:center; color: var(--text-secondary); padding: 10px;">У вас пока нет целей</div>';
@@ -346,7 +409,10 @@
                 const html = `
                     <div class="goal-item">
                         <div class="goal-header">
-                            <span style="font-weight: 600;">${g.name} <button class="delete-btn" onclick="deleteGoal(${index})">🗑️</button></span>
+                            <span style="font-weight: 600; display:flex; align-items:center;">
+                                ${g.name} 
+                                <button class="delete-btn" onclick="deleteGoal(${index})">Убрать</button>
+                            </span>
                             <span style="color: ${g.color}; font-weight: 700;">${percent}%</span>
                         </div>
                         <div class="goal-bar-bg">
@@ -420,7 +486,7 @@
             let icon = "🛍️";
             let type = "expense";
 
-            if (/(получил|пополн|зп|дарил|родител|перевод|доход|подарок|плюс)/i.test(text)) {
+            if (/(получил|пополн|зп|дарил|родител|перевод|доход|подарок|плюс|дал|кинул|скинул)/i.test(text)) {
                 type = "income"; icon = "💰"; category = "Пополнение";
             } else {
                 let matchedGoal = null;
@@ -433,7 +499,7 @@
                 if (matchedGoal) {
                     type = "expense"; icon = "🎯"; category = "Отложено на " + matchedGoal.name;
                     matchedGoal.current += amount; 
-                } else if (/(кофе|ед|бургер|кафе|ресторан|пицц|суши|продукты)/i.test(text)) {
+                } else if (/(кофе|ед|бургер|кафе|ресторан|пицц|суши|продукты|шаурм)/i.test(text)) {
                     category = "Еда / Кофе"; icon = "☕️";
                 } else if (/(такси|автобус|проезд|яндекс|бензин)/i.test(text)) {
                     category = "Транспорт"; icon = "🚕";
