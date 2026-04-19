@@ -93,7 +93,6 @@
         .chat-input:focus { border-color: var(--primary); }
         .send-btn { background-color: var(--primary); color: white; border: none; border-radius: 12px; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .send-btn:active { transform: scale(0.95); }
-        .hint { font-size: 12px; color: var(--text-secondary); margin-top: 8px; text-align: center; }
         
         /* Examples Block */
         .examples-block { background: rgba(79, 70, 229, 0.05); padding: 12px; border-radius: 12px; margin-bottom: 16px; border: 1px dashed rgba(79, 70, 229, 0.2); }
@@ -132,6 +131,14 @@
         .add-btn { background: var(--primary); color: white; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 600; font-size: 14px; cursor: pointer; }
         .delete-btn { background: #fee2e2; border: none; color: #ef4444; border-radius: 6px; padding: 4px 8px; cursor: pointer; font-size: 12px; font-weight: 600; margin-left: 8px; transition: background 0.2s; }
         .delete-btn:active { background: #fecaca; }
+        
+        /* Profile Block in Team Tab */
+        .profile-card { background: rgba(79, 70, 229, 0.05); border: 1px solid rgba(79, 70, 229, 0.2); border-radius: 12px; padding: 16px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; }
+        .profile-info { display: flex; align-items: center; gap: 12px; }
+        .profile-avatar { width: 48px; height: 48px; border-radius: 24px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 600; }
+        .profile-name { font-weight: 600; font-size: 16px; }
+        .profile-email { font-size: 12px; color: var(--text-secondary); }
+        .logout-btn { background: #fee2e2; color: #ef4444; border: none; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; }
 
         /* Modal Overlay */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 16px; animation: fadeIn 0.2s ease-out; }
@@ -192,7 +199,7 @@
                     <div class="example-item"><span class="example-badge">Трата</span> «Потратила 350 на такси»</div>
                     <div class="example-item"><span class="example-badge">Еда</span> «Бургер за 250»</div>
                     <div class="example-item" style="margin-top: 6px; font-size: 11px; color: var(--text-secondary);">
-                        *Сначала добавьте цель во вкладке "Цели", и бот начнет понимать откладывание денег (Например: "500 на телефон").
+                        *Сначала добавьте цель во вкладке "Цели", и бот начнет понимать откладывание денег (Например: "500 на кроссовки").
                     </div>
                 </div>
 
@@ -240,8 +247,20 @@
             </div>
         </div>
 
-        <!-- TAB: TEAM -->
+        <!-- TAB: TEAM & PROFILE -->
         <div id="tab-team" class="tab-content">
+            <!-- User Profile Block -->
+            <div class="profile-card" id="user-profile-block">
+                <div class="profile-info">
+                    <div class="profile-avatar" id="profile-initial">A</div>
+                    <div>
+                        <div class="profile-name" id="profile-name">User</div>
+                        <div class="profile-email" id="profile-email">email@example.com</div>
+                    </div>
+                </div>
+                <button class="logout-btn" onclick="logoutUser()">Выйти</button>
+            </div>
+
             <div class="card">
                 <div class="technovation-tag">🚀 A Project for Technovation Girls</div>
                 <div class="section-title" style="text-align: center; display: block;">Команда</div>
@@ -275,7 +294,7 @@
             <div class="nav-item active" onclick="switchTab('home', this)"><span class="nav-icon">🏠</span><span>Главная</span></div>
             <div class="nav-item" onclick="switchTab('analytics', this)"><span class="nav-icon">📊</span><span>Аналитика</span></div>
             <div class="nav-item" onclick="switchTab('goals', this)"><span class="nav-icon">🎯</span><span>Цели</span></div>
-            <div class="nav-item" onclick="switchTab('team', this)"><span class="nav-icon">👩🏻‍💻</span><span>Команда</span></div>
+            <div class="nav-item" onclick="switchTab('team', this)"><span class="nav-icon">👤</span><span>Профиль</span></div>
         </div>
     </div> <!-- END MAIN APP -->
 
@@ -289,8 +308,55 @@
             else document.body.classList.remove('dark-theme');
         });
 
+        // --- STATE & LOCAL STORAGE ---
+        let balance = 0;
+        let transactions = [];
+        let goals = [];
+
+        function loadState() {
+            const savedBalance = localStorage.getItem('rt_balance');
+            const savedTxs = localStorage.getItem('rt_txs');
+            const savedGoals = localStorage.getItem('rt_goals');
+            
+            if (savedBalance !== null) balance = parseInt(savedBalance);
+            else balance = 0;
+            
+            if (savedTxs !== null) transactions = JSON.parse(savedTxs);
+            else transactions = [];
+            
+            if (savedGoals !== null) goals = JSON.parse(savedGoals);
+            else goals = [];
+        }
+
+        function saveState() {
+            localStorage.setItem('rt_balance', balance);
+            localStorage.setItem('rt_txs', JSON.stringify(transactions));
+            localStorage.setItem('rt_goals', JSON.stringify(goals));
+        }
+
         // --- AUTH LOGIC (REGISTRATION) ---
         function checkAuth() {
+            // Check if user is already registered
+            const user = localStorage.getItem('rt_user_profile');
+            if (user) {
+                const userData = JSON.parse(user);
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
+                
+                // Set Header Greeting
+                document.getElementById('greeting-title').innerText = userData.username ? `Привет, ${userData.username}!` : "RealTracker";
+                
+                // Set Profile Page Info
+                document.getElementById('profile-initial').innerText = userData.username ? userData.username.charAt(0).toUpperCase() : "U";
+                document.getElementById('profile-name').innerText = userData.username || "User";
+                document.getElementById('profile-email').innerText = userData.email || "email@example.com";
+                
+                loadState();
+                updateUI();
+                return;
+            }
+            
+            // Show registration screen if NOT registered
             document.getElementById('auth-screen').style.display = 'flex';
             document.getElementById('main-app').style.display = 'none';
         }
@@ -308,23 +374,41 @@
 
             localStorage.setItem('rt_user_profile', JSON.stringify({ username: username, email: email, age: age }));
             
-            // Clear past demo data on registration to show a clean state
-            if (!localStorage.getItem('rt_has_cleared_once_v10')) {
-                balance = 0;
-                transactions = [];
-                goals = [];
-                localStorage.setItem('rt_has_cleared_once_v10', 'true');
-                saveState();
-            }
+            // Clear past data on NEW registration
+            balance = 0;
+            transactions = [];
+            goals = [];
+            saveState();
 
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('main-app').style.display = 'block';
+            
             document.getElementById('greeting-title').innerText = `Привет, ${username}!`;
+            document.getElementById('profile-initial').innerText = username.charAt(0).toUpperCase();
+            document.getElementById('profile-name').innerText = username;
+            document.getElementById('profile-email').innerText = email;
             
             tg.HapticFeedback.notificationOccurred('success');
             updateUI();
         }
 
+        function logoutUser() {
+            if (confirm("Вы уверены, что хотите выйти из аккаунта? Все данные будут удалены.")) {
+                localStorage.removeItem('rt_user_profile');
+                localStorage.removeItem('rt_balance');
+                localStorage.removeItem('rt_txs');
+                localStorage.removeItem('rt_goals');
+                
+                document.getElementById('reg-username').value = '';
+                document.getElementById('reg-email').value = '';
+                document.getElementById('reg-age').value = '';
+                
+                tg.HapticFeedback.impactOccurred('heavy');
+                checkAuth(); // This will show the login screen again
+            }
+        }
+
+        // Run auth check on load
         checkAuth();
 
         // --- TABS LOGIC ---
@@ -339,25 +423,6 @@
             }
             
             tg.HapticFeedback.selectionChanged();
-        }
-
-        // --- STATE & LOCAL STORAGE ---
-        let balance = 0;
-        let transactions = [];
-        let goals = [];
-
-        const savedBalance = localStorage.getItem('rt_balance');
-        const savedTxs = localStorage.getItem('rt_txs');
-        const savedGoals = localStorage.getItem('rt_goals');
-        
-        if (savedBalance !== null) balance = parseInt(savedBalance);
-        if (savedTxs !== null) transactions = JSON.parse(savedTxs);
-        if (savedGoals !== null) goals = JSON.parse(savedGoals);
-
-        function saveState() {
-            localStorage.setItem('rt_balance', balance);
-            localStorage.setItem('rt_txs', JSON.stringify(transactions));
-            localStorage.setItem('rt_goals', JSON.stringify(goals));
         }
 
         // --- GOALS LOGIC ---
@@ -549,7 +614,7 @@
             let category = "Разное";
             let icon = "🛍️";
             let type = "expense";
-            let goalNameSaved = null; // To track if this went to a goal
+            let goalNameSaved = null;
 
             if (/(получил|пополн|зп|дарил|родител|перевод|доход|подарок|плюс|дал|кинул|скинул)/i.test(text)) {
                 type = "income"; icon = "💰"; category = "Пополнение";
@@ -577,7 +642,6 @@
             if (type === 'income') balance += amount;
             else balance -= amount;
 
-            // Save goalName so we can reverse it if user deletes transaction
             transactions.unshift({ category, amount: type === 'income' ? amount : -amount, icon, type, goalName: goalNameSaved });
             if(transactions.length > 15) transactions.pop();
 
@@ -588,7 +652,6 @@
             tg.HapticFeedback.impactOccurred('medium');
         }
 
-        updateUI();
     </script>
 </body>
 </html>
